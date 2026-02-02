@@ -25,3 +25,62 @@ app.use((req, res, next) => {
 app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/bff/regel/{regeltyp}/{kundbehovsflodeId}
+app.get("/api/bff/regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
+    try {
+        const { regeltyp, kundbehovsflodeId } = req.params;
+        const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
+        const backendUrl = `${backendBaseUrl}/regel/${regeltyp}/${kundbehovsflodeId}`;
+        
+        const response = await fetch(backendUrl, {
+            method: "GET",
+            headers: {
+                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+            },
+        });
+        
+        if (!response.ok) {
+            return res.status(response.status).json({ error: "Backend error" });
+        }
+        
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error("Error fetching from backend:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Endpoint för att markera regel som klar via BFF. Route: POST /api/bff/regel/{regeltyp}/{kundbehovsflodeId}/klar
+app.post("/api/bff/regel/:regeltyp/:kundbehovsflodeId/klar", async (req, res) => {
+    try {
+        const { regeltyp, kundbehovsflodeId } = req.params;
+        const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
+        const backendUrl = `${backendBaseUrl}/regel/${regeltyp}/${kundbehovsflodeId}/klar`;
+        
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+            },
+            body: JSON.stringify(req.body),
+        });
+        
+        if (!response.ok) {
+            return res.status(response.status).json({ error: "Backend error" });
+        }
+        
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error("Error posting to backend:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+app.listen(PORT, () => {
+    console.log(`BFF server running on port ${PORT}`);
+});
