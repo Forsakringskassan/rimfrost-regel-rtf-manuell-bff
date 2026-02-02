@@ -26,22 +26,22 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/bff/regel/{regeltyp}/{kundbehovsflodeId}
-app.get("/api/bff/regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
+// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/regel/{regeltyp}/{kundbehovsflodeId}
+app.get("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     try {
         const { regeltyp, kundbehovsflodeId } = req.params;
         const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/regel/${regeltyp}/${kundbehovsflodeId}`;
+        const backendUrl = `${backendBaseUrl}/api/${regeltyp}/${kundbehovsflodeId}`;
         
         const response = await fetch(backendUrl, {
-            method: "GET",
+            method: "GET", //Invänta information från FK om hur den här ska se ut
             headers: {
                 ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
             },
         });
         
         if (!response.ok) {
-            return res.status(response.status).json({ error: "Backend error" });
+            return res.status(response.status).json({ error: "Failed to fetch task information from the backend." });
         }
         
         const data = await response.json();
@@ -52,12 +52,12 @@ app.get("/api/bff/regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     }
 });
 
-// Endpoint för att markera regel som klar via BFF. Route: POST /api/bff/regel/{regeltyp}/{kundbehovsflodeId}/klar
-app.post("/api/bff/regel/:regeltyp/:kundbehovsflodeId/klar", async (req, res) => {
+// Endpoint för att markera uppgift som klar via BFF. Route: POST /api/regel/{regeltyp}/{kundbehovsflodeId}/klar
+app.post("/api/regel/:regeltyp/:kundbehovsflodeId/klar", async (req, res) => {
     try {
         const { regeltyp, kundbehovsflodeId } = req.params;
         const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/regel/${regeltyp}/${kundbehovsflodeId}/klar`;
+        const backendUrl = `${backendBaseUrl}/api/${regeltyp}/${kundbehovsflodeId}/klar`;
         
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -69,7 +69,7 @@ app.post("/api/bff/regel/:regeltyp/:kundbehovsflodeId/klar", async (req, res) =>
         });
         
         if (!response.ok) {
-            return res.status(response.status).json({ error: "Backend error" });
+            return res.status(response.status).json({ error: "Backend responded with an error when marking as complete." });
         }
         
         const data = await response.json();
