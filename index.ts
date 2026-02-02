@@ -34,9 +34,9 @@ app.get("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
         const backendUrl = `${backendBaseUrl}/api/${regeltyp}/${kundbehovsflodeId}`;
         
         const response = await fetch(backendUrl, {
-            method: "GET", //Invänta information från FK om hur den här ska se ut
+            method: "GET", 
             headers: {
-                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}), //Invänta information från FK om hur den här ska se ut
             },
         });
         
@@ -53,7 +53,7 @@ app.get("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
 });
 
 // Endpoint för att markera uppgift som klar via BFF. Route: POST /api/regel/{regeltyp}/{kundbehovsflodeId}/klar
-app.post("/api/regel/:regeltyp/:kundbehovsflodeId/klar", async (req, res) => {
+app.post("/api/:regeltyp/:kundbehovsflodeId/klar", async (req, res) => {
     try {
         const { regeltyp, kundbehovsflodeId } = req.params;
         const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
@@ -63,7 +63,7 @@ app.post("/api/regel/:regeltyp/:kundbehovsflodeId/klar", async (req, res) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}), //Invänta information från FK om hur den här ska se ut
             },
             body: JSON.stringify(req.body),
         });
