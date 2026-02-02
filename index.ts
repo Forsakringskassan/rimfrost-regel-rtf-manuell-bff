@@ -52,15 +52,15 @@ app.get("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     }
 });
 
-// Endpoint för att markera uppgift som klar via BFF. Route: POST /api/regel/{regeltyp}/{kundbehovsflodeId}/klar
-app.post("/api/:regeltyp/:kundbehovsflodeId/klar", async (req, res) => {
+// Endpoint för att markera uppgift som klar via BFF. Route: PATCH /api/regel/{regeltyp}/{kundbehovsflodeId}
+app.patch("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     try {
         const { regeltyp, kundbehovsflodeId } = req.params;
         const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/api/${regeltyp}/${kundbehovsflodeId}/klar`;
+        const backendUrl = `${backendBaseUrl}/api/${regeltyp}/${kundbehovsflodeId}`;
         
         const response = await fetch(backendUrl, {
-            method: 'POST',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}), //Invänta information från FK om hur den här ska se ut
