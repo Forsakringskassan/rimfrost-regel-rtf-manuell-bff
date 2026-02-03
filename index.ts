@@ -33,12 +33,12 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/regel/{regeltyp}/{kundbehovsflodeId}
-app.get("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
+// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/:regel/:regeltyp/:kundbehovsflodeId
+app.get("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     try {
-        const { regeltyp, kundbehovsflodeId } = req.params;
+        const { regel, regeltyp, kundbehovsflodeId } = req.params;
         const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/${regeltyp}/${kundbehovsflodeId}`;
+        const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`;
         
         console.log(`Proxying GET request to: ${backendUrl}`);
         
@@ -72,12 +72,12 @@ app.get("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     }
 });
 
-// Endpoint för att markera uppgift som klar via BFF. Route: PATCH /api/regel/{regeltyp}/{kundbehovsflodeId}
-app.patch("/api/:regeltyp/:kundbehovsflodeId", async (req, res) => {
+// Endpoint för att markera uppgift som klar via BFF. Route: PATCH /api/:regel/:regeltyp/:kundbehovsflodeId
+app.patch("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     try {
-        const { regeltyp, kundbehovsflodeId } = req.params;
+        const { regel, regeltyp, kundbehovsflodeId } = req.params;
         const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/${regeltyp}/${kundbehovsflodeId}`;
+        const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`;
         
         console.log(`Proxying PATCH request to: ${backendUrl}`);
         console.log(`Request body:`, req.body);
