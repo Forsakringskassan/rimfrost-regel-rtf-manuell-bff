@@ -4,6 +4,11 @@
     "outDir": "./dist",
     "rootDir": "./"
   },
-  "include": ["**/*.ts", "./index.ts"],
+  "include": [
+    "**/*.ts",
+    "./index.ts",
+    "proxyWithFallback.ts",
+    "mockRTFDataService.ts"
+  ],
   "exclude": ["dist"]
 }
