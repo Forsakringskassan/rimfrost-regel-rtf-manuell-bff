@@ -1,6 +1,7 @@
 import express from 'express';
 import path from "path";
 import { fileURLToPath } from "node:url";
+import * as mockDataService from "./mockDataService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,31 +42,39 @@ app.get("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
         const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`;
         
         console.log(`Proxying GET request to: ${backendUrl}`);
-        
-        const response = await fetch(backendUrl, {
-            method: "GET", 
-            headers: {
-                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}), //Invänta information från FK om hur den här ska se ut
-            },
-        });
-        
-        console.log(`Backend response status: ${response.status}`);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Backend error: ${errorText}`);
-            return res.status(response.status).json({ error: "Failed to fetch task information from the backend.", details: errorText });
+        try {
+            const response = await fetch(backendUrl, {
+                method: "GET",
+                headers: {
+                    ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+                },
+            });
+
+            console.log(`Backend response status: ${response.status}`);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`Backend error: ${errorText}`);
+                throw new Error('backend-error');
+            }
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await response.text();
+                console.error(`Backend returned non-JSON content: ${text.substring(0, 200)}`);
+                throw new Error('backend-non-json');
+            }
+
+            const data = await response.json();
+            return res.json(data);
+        } catch (err) {
+            console.warn(`Falling back to mock data for flow ${kundbehovsflodeId}:`, String(err));
+            const fallback = mockDataService.getTask(kundbehovsflodeId);
+            if (!fallback) {
+                return res.status(502).json({ error: 'Backend unavailable and no fallback data for this id' });
+            }
+            return res.json(fallback);
         }
-        
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            const text = await response.text();
-            console.error(`Backend returned non-JSON content: ${text.substring(0, 200)}`);
-            return res.status(502).json({ error: "Backend returned non-JSON response" });
-        }
-        
-        const data = await response.json();
-        res.json(data);
     } catch (error) {
         console.error("Error fetching from backend:", error);
         res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });
@@ -81,33 +90,41 @@ app.patch("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
         
         console.log(`Proxying PATCH request to: ${backendUrl}`);
         console.log(`Request body:`, req.body);
-        
-        const response = await fetch(backendUrl, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}), //Invänta information från FK om hur den här ska se ut
-            },
-            body: JSON.stringify(req.body),
-        });
-        
-        console.log(`Backend response status: ${response.status}`);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Backend error: ${errorText}`);
-            return res.status(response.status).json({ error: "Backend responded with an error when marking as complete.", details: errorText });
+        try {
+            const response = await fetch(backendUrl, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+                },
+                body: JSON.stringify(req.body),
+            });
+
+            console.log(`Backend response status: ${response.status}`);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`Backend error: ${errorText}`);
+                throw new Error('backend-error');
+            }
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await response.text();
+                console.error(`Backend returned non-JSON content: ${text.substring(0, 200)}`);
+                throw new Error('backend-non-json');
+            }
+
+            const data = await response.json();
+            return res.json(data);
+        } catch (err) {
+            console.warn(`Falling back to mock patch for flow ${kundbehovsflodeId}:`, String(err));
+            const patched = mockDataService.patchTask(kundbehovsflodeId, req.body);
+            if (!patched) {
+                return res.status(502).json({ error: 'Backend unavailable and no fallback data for this id' });
+            }
+            return res.json(patched);
         }
-        
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            const text = await response.text();
-            console.error(`Backend returned non-JSON content: ${text.substring(0, 200)}`);
-            return res.status(502).json({ error: "Backend returned non-JSON response" });
-        }
-        
-        const data = await response.json();
-        res.json(data);
     } catch (error) {
         console.error("Error posting to backend:", error);
         res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });
