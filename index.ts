@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import path from "path";
 import { fileURLToPath } from "node:url";
-import * as mockDataService from "./mockDataService.js";
+import { proxyWithFallback } from './proxyWithFallback.js';
+import * as mockRTFDataService from './mockDataService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,101 +36,44 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Endpoint för att hämta uppgiftsbeskrivning. Route: /api/uppgiftsbeskrivning/:uppgiftstyp
+app.get("/api/uppgiftsbeskrivning/:uppgiftstyp", async (req, res) => {
+    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
+    const backendUrl = `${backendBaseUrl}/regel/rtf-manuell/utokadUppgiftsbeskrivning`;
+    
+    await proxyWithFallback(req, res, {
+        targetUrl: backendUrl,
+        method: 'GET',
+        fallbackData: { beskrivning: "Fallback: Beskrivning kunde inte laddas från backend." }
+    });
+});
+
 // Endpoint för att hämta uppgiftinformation via BFF. Route: /api/:regel/:regeltyp/:kundbehovsflodeId
 app.get("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
-    try {
-        const { regel, regeltyp, kundbehovsflodeId } = req.params;
-        const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`;
-        
-        console.log(`Proxying GET request to: ${backendUrl}`);
-        try {
-            const response = await fetch(backendUrl, {
-                method: "GET",
-                headers: {
-                    ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
-                },
-            });
-
-            console.log(`Backend response status: ${response.status}`);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`Backend error: ${errorText}`);
-                throw new Error('backend-error');
-            }
-
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                const text = await response.text();
-                console.error(`Backend returned non-JSON content: ${text.substring(0, 200)}`);
-                throw new Error('backend-non-json');
-            }
-
-            const data = await response.json();
-            return res.json(data);
-        } catch (err) {
-            console.warn(`Falling back to mock data for flow ${kundbehovsflodeId}:`, String(err));
-            const fallback = mockDataService.getTask(kundbehovsflodeId);
-            if (!fallback) {
-                return res.status(502).json({ error: 'Backend unavailable and no fallback data for this id' });
-            }
-            return res.json(fallback);
+    const { regel, regeltyp, kundbehovsflodeId } = req.params;
+    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
+    
+    await proxyWithFallback(req, res, {
+        targetUrl: `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`,
+        method: 'GET',
+        fallbackData: mockRTFDataService.getUppgiftData(kundbehovsflodeId),
+        onSuccess: (data) => {
+            return data;
         }
-    } catch (error) {
-        console.error("Error fetching from backend:", error);
-        res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });
-    }
+    })
 });
 
 // Endpoint för att markera uppgift som klar via BFF. Route: PATCH /api/:regel/:regeltyp/:kundbehovsflodeId
 app.patch("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
-    try {
-        const { regel, regeltyp, kundbehovsflodeId } = req.params;
-        const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`;
-        
-        console.log(`Proxying PATCH request to: ${backendUrl}`);
-        console.log(`Request body:`, req.body);
-        try {
-            const response = await fetch(backendUrl, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
-                },
-                body: JSON.stringify(req.body),
-            });
-
-            console.log(`Backend response status: ${response.status}`);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`Backend error: ${errorText}`);
-                throw new Error('backend-error');
-            }
-
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                const text = await response.text();
-                console.error(`Backend returned non-JSON content: ${text.substring(0, 200)}`);
-                throw new Error('backend-non-json');
-            }
-
-            const data = await response.json();
-            return res.json(data);
-        } catch (err) {
-            console.warn(`Falling back to mock patch for flow ${kundbehovsflodeId}:`, String(err));
-            const patched = mockDataService.patchTask(kundbehovsflodeId, req.body);
-            if (!patched) {
-                return res.status(502).json({ error: 'Backend unavailable and no fallback data for this id' });
-            }
-            return res.json(patched);
-        }
-    } catch (error) {
-        console.error("Error posting to backend:", error);
-        res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });
-    }
+    const { regel, regeltyp, kundbehovsflodeId } = req.params;
+    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
+    
+    await proxyWithFallback(req, res, {
+        targetUrl: `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`,
+        method: 'PATCH',
+        body: req.body,
+        fallbackData: mockRTFDataService.updateUppgiftStatus(kundbehovsflodeId, req.body)
+    })
 });
 
 
