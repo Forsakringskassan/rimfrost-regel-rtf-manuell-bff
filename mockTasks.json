@@ -1,0 +1,222 @@
+[
+  {
+    "kundbehovsflode_id": "kbf-001",
+    "kund": {
+      "fornamn": "Anna",
+      "efternamn": "Andersson",
+      "kon": "KVINNA",
+      "anstallning": {
+        "anstallningsdag": "2020-01-15",
+        "arbetstid_procent": 100,
+        "sista_anstallningsdag": null,
+        "organisationsnamn": "Tech AB",
+        "organisationsnummer": "5566778899",
+        "lon": {
+          "from": "2020-01-15",
+          "tom": null,
+          "lonesumma": 450000
+        }
+      }
+    },
+    "ersattning": [
+      {
+        "ersattning_id": "ers-001-001",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 80,
+        "belopp": 28000,
+        "berakningsgrund": 35000,
+        "beslutsutfall": null,
+        "from": "2026-01-01",
+        "tom": "2026-01-01",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-001-002",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 100,
+        "belopp": 15000,
+        "berakningsgrund": 15000,
+        "beslutsutfall": null,
+        "from": "2026-01-02",
+        "tom": "2026-01-02",
+        "avslagsanledning": null
+      }
+    ]
+  },
+  {
+    "kundbehovsflode_id": "kbf-002",
+    "kund": {
+      "fornamn": "Erik",
+      "efternamn": "Eriksson",
+      "kon": "MAN",
+      "anstallning": {
+        "anstallningsdag": "2019-03-01",
+        "arbetstid_procent": 75,
+        "sista_anstallningsdag": "2025-12-31",
+        "organisationsnamn": "Industri & Handel",
+        "organisationsnummer": "1122334455",
+        "lon": {
+          "from": "2019-03-01",
+          "tom": "2025-12-31",
+          "lonesumma": 320000
+        }
+      }
+    },
+    "ersattning": [
+      {
+        "ersattning_id": "ers-002-001",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 75,
+        "belopp": 18000,
+        "berakningsgrund": 24000,
+        "beslutsutfall": null,
+        "from": "2026-02-01",
+        "tom": "2026-02-01",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-002-002",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 75,
+        "belopp": 18000,
+        "berakningsgrund": 24000,
+        "beslutsutfall": null,
+        "from": "2026-02-02",
+        "tom": "2026-02-02",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-002-003",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 75,
+        "belopp": 18000,
+        "berakningsgrund": 24000,
+        "beslutsutfall": null,
+        "from": "2026-02-03",
+        "tom": "2026-02-03",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-002-004",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 75,
+        "belopp": 18000,
+        "berakningsgrund": 24000,
+        "beslutsutfall": null,
+        "from": "2026-02-04",
+        "tom": "2026-02-04",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-002-005",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 75,
+        "belopp": 18000,
+        "berakningsgrund": 24000,
+        "beslutsutfall": null,
+        "from": "2026-02-05",
+        "tom": "2026-02-05",
+        "avslagsanledning": null
+      }
+    ]
+  },
+  {
+    "kundbehovsflode_id": "kbf-003",
+    "kund": {
+      "fornamn": "Maria",
+      "efternamn": "Magnusson",
+      "kon": "KVINNA",
+      "anstallning": {
+        "anstallningsdag": "2018-06-10",
+        "arbetstid_procent": 50,
+        "sista_anstallningsdag": null,
+        "organisationsnamn": "Konsult & Rådgivning",
+        "organisationsnummer": "9988776655",
+        "lon": {
+          "from": "2018-06-10",
+          "tom": null,
+          "lonesumma": 280000
+        }
+      }
+    },
+    "ersattning": [
+      {
+        "ersattning_id": "ers-003-001",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 50,
+        "belopp": 8500,
+        "berakningsgrund": 17000,
+        "beslutsutfall": null,
+        "from": "2026-03-01",
+        "tom": "2026-03-01",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-003-002",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 50,
+        "belopp": 12000,
+        "berakningsgrund": 24000,
+        "beslutsutfall": null,
+        "from": "2026-03-02",
+        "tom": "2026-03-02",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-003-003",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 50,
+        "belopp": 5000,
+        "berakningsgrund": 10000,
+        "beslutsutfall": null,
+        "from": "2026-03-03",
+        "tom": "2026-03-03",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-003-004",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 50,
+        "belopp": 7000,
+        "berakningsgrund": 14000,
+        "beslutsutfall": null,
+        "from": "2026-03-04",
+        "tom": "2026-03-04",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-003-005",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 50,
+        "belopp": 9000,
+        "berakningsgrund": 18000,
+        "beslutsutfall": null,
+        "from": "2026-03-05",
+        "tom": "2026-03-05",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-003-006",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 50,
+        "belopp": 6500,
+        "berakningsgrund": 13000,
+        "beslutsutfall": null,
+        "from": "2026-03-06",
+        "tom": "2026-03-06",
+        "avslagsanledning": null
+      },
+      {
+        "ersattning_id": "ers-003-007",
+        "ersattningstyp": "VAH",
+        "omfattning_procent": 50,
+        "belopp": 8000,
+        "berakningsgrund": 16000,
+        "beslutsutfall": null,
+        "from": "2026-03-07",
+        "tom": "2026-03-07",
+        "avslagsanledning": null
+      }
+    ]
+  }
+]
