@@ -1,8 +1,4 @@
 import express from 'express';
-import path from "path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
 
 const app = express();
 const PORT = process.env.PORT || 9002;
@@ -50,6 +46,7 @@ app.get("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
         return res.json(data);
     } catch (err) {
         console.error("Error during fetch from backend:", err);
+        return res.status(500).json({ error: "Internal server error", message: err instanceof Error ? err.message : String(err) });
     }
 });
 
@@ -60,7 +57,6 @@ app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/patchErsattning", async (req,
 
     try {
         for (const item of ersattning) {
-            console.log(`Patching ersattningId ${item.ersattningId} with beslutsutfall: ${item.beslutsutfall} and avslagsanledning: ${item.avslagsanledning}`);
             const patchUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}/ersattning/${item.ersattningId}`;
             const patchResponse = await fetch(patchUrl, {
                 method: "PATCH",
