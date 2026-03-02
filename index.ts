@@ -1,3 +1,4 @@
+import validateErsattningArray from '#utils/validateErsattningArray.js';
 import express from 'express';
 
 const app = express();
@@ -54,6 +55,11 @@ app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/patchErsattning", async (req,
     const { regel, regeltyp, kundbehovsflodeId } = req.params;
     const { ersattning } = req.body;
     const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
+    const backendDoneUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}/done`;
+
+    if (!validateErsattningArray(ersattning)) {
+        return res.status(400).json({ error: "Invalid ersattning array format" });
+    }
 
     try {
         for (const item of ersattning) {
@@ -62,6 +68,7 @@ app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/patchErsattning", async (req,
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
+                    ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
                 },
                 body: JSON.stringify({
                     beslutsutfall: item.beslutsutfall,
@@ -75,33 +82,11 @@ app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/patchErsattning", async (req,
             }
         }
 
-        const doneUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}/done`;
-        const doneResponse = await fetch(doneUrl, {
-            method: "POST",
-        });
-
-        if (!doneResponse.ok) {
-            console.error(`Failed to mark as done for kundbehovsflodeId ${kundbehovsflodeId}`);
-            return res.status(502).json({ error: `Failed to mark as done for kundbehovsflodeId ${kundbehovsflodeId}` });
-        }
-    } catch (error) {
-        console.error("Error patching ersattning:", error);
-        return res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });
-    }
-}
-)
-
-app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/done", async (req, res) => {
-        const { regel, regeltyp, kundbehovsflodeId } = req.params;
-        const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-        const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}/done`;
-        try {
-            const response = await fetch(backendUrl, {
+        const response = await fetch(backendDoneUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
-                },
+                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+                }
             });
 
             if (!response.ok) {
@@ -109,11 +94,14 @@ app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/done", async (req, res) => {
                 console.error(`Backend error: ${errorText}`);
                 throw new Error('backend-error');
             }
+
+        return res.json({ message: "Ersättningar uppdaterade och postDone anropat" });
     } catch (error) {
-        console.error("Error posting to backend:", error);
-        res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });
+        console.error("Error patching ersattning:", error);
+        return res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });
     }
-});
+}
+)
 
 app.listen(PORT, () => {
     console.log(`BFF server running on port ${PORT}`);
