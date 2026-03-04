@@ -131,6 +131,26 @@ app.patch("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     }
 });
 
+//Endpoint för att hämta uppgiftsbeskrivning via BFF. Route: /api/uppgiftsbeskrivning/:uppgiftstyp
+
+app.get("/api/uppgiftsbeskrivning/:uppgiftstyp", async (req, res) => {
+    const { uppgiftstyp } = req.params;
+    // Adjust backend URL as needed for your environment
+    const backendUrl = `http://localhost:8890/regel/rtf-manuell/utokadUppgiftsbeskrivning`;
+
+    try {
+        const response = await fetch(backendUrl, { method: 'GET' });
+        if (!response.ok) {
+            const errorText = await response.text();
+            return res.status(response.status).json({ error: "Failed to fetch from backend", details: errorText });
+        }
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(502).json({ error: "Backend service unavailable", message: error instanceof Error ? error.message : String(error) });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`BFF server running on port ${PORT}`);
