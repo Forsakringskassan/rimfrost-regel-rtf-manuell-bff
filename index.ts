@@ -23,11 +23,11 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/:regel/:regeltyp/:kundbehovsflodeId
-app.get("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
-    const { regel, regeltyp, kundbehovsflodeId } = req.params;
+// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/:regel/:regeltyp/:handlaggningId
+app.get("/api/:regel/:regeltyp/:handlaggningId", async (req, res) => {
+    const { regel, regeltyp, handlaggningId } = req.params;
     const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-    const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}`;
+    const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${handlaggningId}`;
 
     try {
         const response = await fetch(backendUrl, {
@@ -51,11 +51,11 @@ app.get("/api/:regel/:regeltyp/:kundbehovsflodeId", async (req, res) => {
     }
 });
 
-app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/patchErsattning", async (req, res) => {
-    const { regel, regeltyp, kundbehovsflodeId } = req.params;
+app.post("/api/:regel/:regeltyp/:handlaggningId/patchErsattning", async (req, res) => {
+    const { regel, regeltyp, handlaggningId } = req.params;
     const { ersattning } = req.body;
     const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-    const backendDoneUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}/done`;
+    const backendDoneUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${handlaggningId}/done`;
 
     if (!validateErsattningArray(ersattning)) {
         return res.status(400).json({ error: "Invalid ersattning array format" });
@@ -63,7 +63,7 @@ app.post("/api/:regel/:regeltyp/:kundbehovsflodeId/patchErsattning", async (req,
 
     try {
         for (const item of ersattning) {
-            const patchUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${kundbehovsflodeId}/ersattning/${item.ersattningId}`;
+            const patchUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${handlaggningId}/ersattning/${item.ersattningId}`;
             const patchResponse = await fetch(patchUrl, {
                 method: "PATCH",
                 headers: {
