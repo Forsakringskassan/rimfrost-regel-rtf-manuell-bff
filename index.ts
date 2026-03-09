@@ -40,7 +40,7 @@ app.get("/api/:regel/:regeltyp/:handlaggningId", async (req, res) => {
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`Backend error: ${errorText}`);
-            throw new Error('backend-error');
+            throw new Error('backend-error'); 
         }
 
         const data = await response.json();
