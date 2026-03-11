@@ -1,5 +1,6 @@
 import validateErsattningArray from '#utils/validateErsattningArray.js';
 import express from 'express';
+import { transformBackendResponse } from './utils/transformBackendResponse.js';
 
 const app = express();
 const PORT = process.env.PORT || 9002;
@@ -44,7 +45,7 @@ app.get("/api/:regel/:regeltyp/:handlaggningId", async (req, res) => {
         }
 
         const data = await response.json();
-        return res.json(data);
+        return res.json(transformBackendResponse(data));
     } catch (err) {
         console.error("Error during fetch from backend:", err);
         return res.status(500).json({ error: "Internal server error", message: err instanceof Error ? err.message : String(err) });
