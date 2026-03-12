@@ -1,4 +1,5 @@
 import validateErsattningArray from '#utils/validateErsattningArray.js';
+import { transformBackendResponse } from '#utils/transformBackendResponse.js';
 import express from 'express';
 
 const app = express();
@@ -45,7 +46,7 @@ app.get("/api/task/:handlaggningId", async (req, res) => {
         }
 
         const data = await response.json();
-        return res.json(data);
+        return res.json(transformBackendResponse(data));
     } catch (err) {
         console.error("Error during fetch from backend:", err);
         return res.status(500).json({ error: "Internal server error", message: err instanceof Error ? err.message : String(err) });
@@ -65,7 +66,7 @@ app.post("/api/:handlaggningId/patchErsattning", async (req, res) => {
 
     try {
         for (const item of ersattning) {
-            const patchUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}/ersattning/${item.ersattningId}`;
+            const patchUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}/ersattning/${item.ersattning_id}`;
             const patchResponse = await fetch(patchUrl, {
                 method: "PATCH",
                 headers: {
@@ -79,8 +80,8 @@ app.post("/api/:handlaggningId/patchErsattning", async (req, res) => {
             })
 
             if (!patchResponse.ok) {
-                console.error(`Failed to patch ersattningId ${item.ersattningId}`);
-                return res.status(502).json({ error: `Failed to patch ersattningId ${item.ersattningId}` });
+                console.error(`Failed to patch ersattningId ${item.ersattning_id}`);
+                return res.status(502).json({ error: `Failed to patch ersattning_id ${item.ersattning_id}` });
             }
         }
 
