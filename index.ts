@@ -1,6 +1,7 @@
 import validateErsattningArray from '#utils/validateErsattningArray.js';
 import { transformBackendResponse } from '#utils/transformBackendResponse.js';
 import express from 'express';
+import { transformBackendResponse } from './utils/transformBackendResponse.js';
 
 const app = express();
 const PORT = process.env.PORT || 9002;
