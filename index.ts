@@ -1,4 +1,5 @@
 import validateErsattningArray from '#utils/validateErsattningArray.js';
+import { transformBackendResponse } from '#utils/transformBackendResponse.js';
 import express from 'express';
 import { transformBackendResponse } from './utils/transformBackendResponse.js';
 
@@ -24,11 +25,12 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/:regel/:regeltyp/:handlaggningId
-app.get("/api/:regel/:regeltyp/:handlaggningId", async (req, res) => {
-    const { regel, regeltyp, handlaggningId } = req.params;
-    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-    const backendUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${handlaggningId}`;
+// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/task/:handlaggningId
+app.get("/api/task/:handlaggningId", async (req, res) => {
+    const { handlaggningId } = req.params;
+    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "";
+    const backendRuleUrl = process.env.BACKEND_RULE_URL ?? "";
+    const backendUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}`;
 
     try {
         const response = await fetch(backendUrl, {
@@ -41,7 +43,7 @@ app.get("/api/:regel/:regeltyp/:handlaggningId", async (req, res) => {
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`Backend error: ${errorText}`);
-            throw new Error('backend-error');
+            throw new Error('backend-error'); 
         }
 
         const data = await response.json();
@@ -52,11 +54,12 @@ app.get("/api/:regel/:regeltyp/:handlaggningId", async (req, res) => {
     }
 });
 
-app.post("/api/:regel/:regeltyp/:handlaggningId/patchErsattning", async (req, res) => {
-    const { regel, regeltyp, handlaggningId } = req.params;
+app.post("/api/:handlaggningId/patchErsattning", async (req, res) => {
+    const { handlaggningId } = req.params;
     const { ersattning } = req.body;
-    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://localhost:8890";
-    const backendDoneUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${handlaggningId}/done`;
+    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "";
+    const backendRuleUrl = process.env.BACKEND_RULE_URL ?? "";
+    const backendDoneUrl = `${backendBaseUrl}/${handlaggningId}/done`;
 
     if (!validateErsattningArray(ersattning)) {
         return res.status(400).json({ error: "Invalid ersattning array format" });
@@ -64,7 +67,7 @@ app.post("/api/:regel/:regeltyp/:handlaggningId/patchErsattning", async (req, re
 
     try {
         for (const item of ersattning) {
-            const patchUrl = `${backendBaseUrl}/${regel}/${regeltyp}/${handlaggningId}/ersattning/${item.ersattningId}`;
+            const patchUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}/ersattning/${item.ersattning_id}`;
             const patchResponse = await fetch(patchUrl, {
                 method: "PATCH",
                 headers: {
@@ -78,8 +81,8 @@ app.post("/api/:regel/:regeltyp/:handlaggningId/patchErsattning", async (req, re
             })
 
             if (!patchResponse.ok) {
-                console.error(`Failed to patch ersattningId ${item.ersattningId}`);
-                return res.status(502).json({ error: `Failed to patch ersattningId ${item.ersattningId}` });
+                console.error(`Failed to patch ersattningId ${item.ersattning_id}`);
+                return res.status(502).json({ error: `Failed to patch ersattning_id ${item.ersattning_id}` });
             }
         }
 
