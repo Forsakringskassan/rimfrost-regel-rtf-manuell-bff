@@ -2,6 +2,7 @@ import validateErsattningArray from '#utils/validateErsattningArray.js';
 import { transformBackendResponse } from '#utils/transformBackendResponse.js';
 import express from 'express';
 import { transformBackendResponse } from './utils/transformBackendResponse.js';
+import { getMockTask } from './utils/mockTaskData.js';
 
 const app = express();
 const PORT = process.env.PORT || 9002;
@@ -33,24 +34,13 @@ app.get("/api/task/:handlaggningId", async (req, res) => {
     const backendUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}`;
 
     try {
-        const response = await fetch(backendUrl, {
-            method: "GET",
-            headers: {
-                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
-            },
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Backend error: ${errorText}`);
-            throw new Error('backend-error'); 
-        }
-
+        const response = await fetch(backendUrl, { method: "GET" });
+        if (!response.ok) throw new Error('backend-error');
         const data = await response.json();
         return res.json(transformBackendResponse(data));
     } catch (err) {
-        console.error("Error during fetch from backend:", err);
-        return res.status(500).json({ error: "Internal server error", message: err instanceof Error ? err.message : String(err) });
+        console.warn(`[FALLBACK] Using mock data for handlaggningId: ${handlaggningId}`);
+        return res.json(getMockTask(handlaggningId));
     }
 });
 
