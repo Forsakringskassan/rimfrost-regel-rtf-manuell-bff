@@ -1,7 +1,6 @@
 import validateErsattningArray from '#utils/validateErsattningArray.js';
 import { transformBackendResponse } from '#utils/transformBackendResponse.js';
 import express from 'express';
-import { transformBackendResponse } from './utils/transformBackendResponse.js';
 
 const app = express();
 const PORT = process.env.PORT || 9002;
@@ -28,9 +27,11 @@ app.get("/api/health", (req, res) => {
 // Endpoint för att hämta uppgiftinformation via BFF. Route: /api/task/:handlaggningId
 app.get("/api/task/:handlaggningId", async (req, res) => {
     const { handlaggningId } = req.params;
-    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "";
-    const backendRuleUrl = process.env.BACKEND_RULE_URL ?? "";
+    const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
+    const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
     const backendUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}`;
+
+    console.log(`Fetching task information for handlaggningId: ${handlaggningId} from backend URL: ${backendUrl}`);
 
     try {
         const response = await fetch(backendUrl, {
@@ -57,9 +58,9 @@ app.get("/api/task/:handlaggningId", async (req, res) => {
 app.post("/api/:handlaggningId/patchErsattning", async (req, res) => {
     const { handlaggningId } = req.params;
     const { ersattning } = req.body;
-    const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "";
-    const backendRuleUrl = process.env.BACKEND_RULE_URL ?? "";
-    const backendDoneUrl = `${backendBaseUrl}/${handlaggningId}/done`;
+    const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
+    const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
+    const backendDoneUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}/done`;
 
     if (!validateErsattningArray(ersattning)) {
         return res.status(400).json({ error: "Invalid ersattning array format" });
@@ -111,7 +112,9 @@ app.post("/api/:handlaggningId/patchErsattning", async (req, res) => {
 app.get("/api/uppgiftsbeskrivning/:uppgiftstyp", async (req, res) => {
     const { uppgiftstyp } = req.params;
     // Adjust backend URL as needed for your environment
-    const backendUrl = `http://localhost:8890/regel/rtf-manuell/utokadUppgiftsbeskrivning`;
+    const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
+    const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
+    const backendUrl = `${backendBaseUrl}/${backendRuleUrl}/utokadUppgiftsbeskrivning`;
 
     try {
         const response = await fetch(backendUrl, { method: 'GET' });
