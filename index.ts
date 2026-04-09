@@ -1,4 +1,3 @@
-import validateErsattningArray from '#utils/validateErsattningArray.js';
 import { transformBackendResponse } from '#utils/transformBackendResponse.js';
 import express from 'express';
 
@@ -55,52 +54,51 @@ app.get("/api/task/:handlaggningId", async (req, res) => {
     }
 });
 
-app.post("/api/:handlaggningId/patchErsattning", async (req, res) => {
+app.post("/api/:handlaggningId/patchErsattningar", async (req, res) => {
     const { handlaggningId } = req.params;
-    const { ersattning } = req.body;
+    const { ersattningar } = req.body;
     const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
     const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
     const backendDoneUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}/done`;
 
-    if (!validateErsattningArray(ersattning)) {
-        return res.status(400).json({ error: "Invalid ersattning array format" });
-    }
-
     try {
-        for (const item of ersattning) {
-            const patchUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}/ersattning/${item.ersattning_id}`;
-            const patchResponse = await fetch(patchUrl, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
-                },
-                body: JSON.stringify({
+        const patchUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}`;
+        const patchResponse = await fetch(patchUrl, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
+            },
+            body: JSON.stringify({
+                ersattningar: ersattningar.map((item: any) => ({
+                    ersattningId: item.ersattningId,
                     beslutsutfall: item.beslutsutfall,
                     avslagsanledning: item.avslagsanledning,
-                }),
-            })
+                    signernad: true,
+                })),
+            }),
+        });
 
-            if (!patchResponse.ok) {
-                console.error(`Failed to patch ersattningId ${item.ersattning_id}`);
-                return res.status(502).json({ error: `Failed to patch ersattning_id ${item.ersattning_id}` });
-            }
+        if (!patchResponse.ok) {
+            const errorText = await patchResponse.text();
+            console.error(`Backend PATCH error: ${errorText}`);
+            return res.status(502).json({ error: `Failed to patch ersattningar` });
         }
 
-        const response = await fetch(backendDoneUrl, {
-                method: 'POST',
-                headers: {
+        const doneResponse = await fetch(backendDoneUrl, {
+            method: 'POST',
+            headers: {
                 ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}),
-                }
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`Backend error: ${errorText}`);
-                throw new Error('backend-error');
             }
+        });
 
-        return res.json({ message: "Ersättningar uppdaterade och postDone anropat" });
+        if (!doneResponse.ok) {
+            const errorText = await doneResponse.text();
+            console.error(`Backend done error: ${errorText}`);
+            throw new Error('backend-error');
+        }
+
+        return res.status(204).end();
     } catch (error) {
         console.error("Error patching ersattning:", error);
         return res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : String(error) });

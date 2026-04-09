@@ -8,7 +8,7 @@ export default function validateErsattningArray(ersattning: any): boolean {
         if (typeof item !== 'object' || item === null) {
             return false;
         }
-        if (typeof item.ersattning_id !== 'string' ||
+        if (typeof item.ersattningId !== 'string' ||
             typeof item.beslutsutfall !== 'string' ||
             (item.avslagsanledning !== null && typeof item.avslagsanledning !== 'string')) {
             return false;
