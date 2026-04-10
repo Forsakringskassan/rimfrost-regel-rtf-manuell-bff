@@ -1,18 +1,12 @@
 export function transformBackendResponse(backendData: any) {
-  const lon = {
-    from: backendData.kund.anstallning.lon.from,
-    tom: backendData.kund.anstallning.lon.tom,
-    lonesumma: backendData.kund.anstallning.lon.lonesumma,
-  };
-
-  const anstallning = {
-    anstallningsdag: backendData.kund.anstallning.anstallningsdag,
-    arbetstidProcent: backendData.kund.anstallning.arbetstid_procent,
-    sistaAnstallningsdag: backendData.kund.anstallning.sista_anstallningsdag,
-    organisationsnamn: backendData.kund.anstallning.organisationsnamn,
-    organisationsnummer: backendData.kund.anstallning.organisationsnummer,
-    lon,
-  };
+  const rawAnstallning = backendData.kund.anstallning;
+  const anstallning = rawAnstallning ? {
+    anstallningsdag: rawAnstallning.anstallningsdag,
+    arbetstidProcent: rawAnstallning.arbetstid_procent,
+    sistaAnstallningsdag: rawAnstallning.sista_anstallningsdag,
+    organisationsnamn: rawAnstallning.organisationsnamn,
+    organisationsnummer: rawAnstallning.organisationsnummer,
+  } : undefined;
 
   const kund = {
     fornamn: backendData.kund.fornamn,
@@ -21,7 +15,7 @@ export function transformBackendResponse(backendData: any) {
     anstallning,
   };
 
-  const ersattning = backendData.ersattning.map((e: any) => ({
+  const ersattningar = backendData.ersattningar.map((e: any) => ({
     ersattningId: e.ersattning_id,
     ersattningstyp: e.ersattningstyp,
     omfattningProcent: e.omfattning_procent,
@@ -36,6 +30,6 @@ export function transformBackendResponse(backendData: any) {
   return {
     handlaggningId: backendData.handlaggning_id,
     kund,
-    ersattning,
+    ersattningar,
   };
 }
