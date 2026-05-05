@@ -23,9 +23,9 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Endpoint för att hämta uppgiftinformation via BFF. Route: /api/task/:handlaggningId
-app.get("/api/task/:handlaggningId", async (req, res) => {
-    const { handlaggningId } = req.params;
+// Endpoint för att hämta uppgiftinformation via BFF. Route: POST /api/task
+app.post("/api/task", async (req, res) => {
+    const { handlaggningId } = req.body;
     const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
     const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
     const backendUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}`;
@@ -54,9 +54,8 @@ app.get("/api/task/:handlaggningId", async (req, res) => {
     }
 });
 
-app.post("/api/:handlaggningId/patchErsattningar", async (req, res) => {
-    const { handlaggningId } = req.params;
-    const { ersattningar } = req.body;
+app.post("/api/patchErsattningar", async (req, res) => {
+    const { handlaggningId, ersattningar } = req.body;
     const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
     const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
     const backendDoneUrl = `${backendBaseUrl}/${backendRuleUrl}/${handlaggningId}/done`;
@@ -105,10 +104,10 @@ app.post("/api/:handlaggningId/patchErsattningar", async (req, res) => {
     }
 });
 
-//Endpoint för att hämta uppgiftsbeskrivning via BFF. Route: /api/uppgiftsbeskrivning/:uppgiftstyp
+//Endpoint för att hämta uppgiftsbeskrivning via BFF. Route: POST /api/uppgiftsbeskrivning
 
-app.get("/api/uppgiftsbeskrivning/:uppgiftstyp", async (req, res) => {
-    const { uppgiftstyp } = req.params;
+app.post("/api/uppgiftsbeskrivning", async (req, res) => {
+    const { uppgiftstyp } = req.body;
     // Adjust backend URL as needed for your environment
     const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
     const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
