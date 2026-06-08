@@ -105,10 +105,10 @@ app.post("/api/:handlaggningId/patchErsattningar", async (req, res) => {
     }
 });
 
-//Endpoint för att hämta uppgiftsbeskrivning via BFF. Route: /api/uppgiftsbeskrivning/:uppgiftstyp
+//Endpoint för att hämta uppgiftsbeskrivning via BFF. Route: POST /api/uppgiftsbeskrivning
 
-app.get("/api/uppgiftsbeskrivning/:uppgiftstyp", async (req, res) => {
-    const { uppgiftstyp } = req.params;
+app.post("/api/uppgiftsbeskrivning", async (req, res) => {
+    const { uppgiftstyp } = req.body;
     // Adjust backend URL as needed for your environment
     const backendBaseUrl = process.env.BE_RTF_MANUELL_URL ?? "";
     const backendRuleUrl = process.env.BE_RULE_PATH ?? "";
