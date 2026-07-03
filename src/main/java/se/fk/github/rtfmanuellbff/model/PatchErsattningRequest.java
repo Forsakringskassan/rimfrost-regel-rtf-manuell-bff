@@ -6,6 +6,4 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record PatchErsattningRequest(
-      @NotNull @NotEmpty @Valid List<UpdateErsattning> ersattningar
-) {}
+public record PatchErsattningRequest(@NotNull @NotEmpty @Valid List<UpdateErsattning>ersattningar){}

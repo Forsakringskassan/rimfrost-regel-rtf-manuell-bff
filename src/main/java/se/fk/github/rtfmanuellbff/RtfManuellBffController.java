@@ -43,8 +43,7 @@ public class RtfManuellBffController
       BackendPatchRequest backendBody = new BackendPatchRequest(
             body.ersattningar().stream()
                   .map(e -> new BackendUpdateErsattning(e.ersattningId(), e.beslutsutfall(), e.avslagsanledning(), true))
-                  .toList()
-      );
+                  .toList());
       backendClient.patchErsattningar(handlaggningId, backendBody, authorization);
       backendClient.done(handlaggningId, authorization);
       return Response.noContent().build();

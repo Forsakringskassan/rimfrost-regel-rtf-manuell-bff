@@ -16,8 +16,7 @@ public class RtfManuellMapper
             raw.kund().fornamn(),
             raw.kund().efternamn(),
             raw.kund().kon(),
-            anstallning
-      );
+            anstallning);
 
       List<Ersattning> ersattningar = raw.ersattningar() == null
             ? List.of()
@@ -33,8 +32,7 @@ public class RtfManuellMapper
             raw.arbetstidProcent(),
             raw.sistaAnstallningsdag(),
             raw.organisationsnamn(),
-            raw.organisationsnummer()
-      );
+            raw.organisationsnummer());
    }
 
    private static Ersattning transformErsattning(RawErsattning raw)
@@ -48,7 +46,6 @@ public class RtfManuellMapper
             raw.beslutsutfall(),
             raw.from(),
             raw.tom(),
-            raw.avslagsanledning()
-      );
+            raw.avslagsanledning());
    }
 }

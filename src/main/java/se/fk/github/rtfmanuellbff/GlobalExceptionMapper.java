@@ -58,14 +58,19 @@ public class GlobalExceptionMapper
    {
       Set<Throwable> visited = new HashSet<>();
       Deque<Throwable> queue = new ArrayDeque<>();
-      if (root != null) queue.add(root);
+      if (root != null)
+         queue.add(root);
       while (!queue.isEmpty())
       {
          Throwable t = queue.poll();
-         if (!visited.add(t)) continue;
-         if (t instanceof IOException) return true;
-         if (t.getCause() != null) queue.add(t.getCause());
-         for (Throwable s : t.getSuppressed()) queue.add(s);
+         if (!visited.add(t))
+            continue;
+         if (t instanceof IOException)
+            return true;
+         if (t.getCause() != null)
+            queue.add(t.getCause());
+         for (Throwable s : t.getSuppressed())
+            queue.add(s);
       }
       return false;
    }
