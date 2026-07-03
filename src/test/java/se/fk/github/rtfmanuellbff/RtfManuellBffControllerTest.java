@@ -209,7 +209,7 @@ class RtfManuellBffControllerTest
    }
 
    @Test
-   void getUppgiftsbeskrivning_returns502_whenBackendUnreachable()
+   void getUppgiftsbeskrivning_returns500_whenBackendUnreachable()
    {
       WireMockTestResource.getServer().stubFor(get(urlEqualTo("/utokadUppgiftsbeskrivning"))
             .willReturn(aResponse().withFault(com.github.tomakehurst.wiremock.http.Fault.CONNECTION_RESET_BY_PEER)));
@@ -218,7 +218,7 @@ class RtfManuellBffControllerTest
             .when()
             .get("/api/uppgiftsbeskrivning/RTF_MANUELL")
             .then()
-            .statusCode(502)
-            .body("error", equalTo("Upstream unavailable"));
+            .statusCode(500)
+            .body("error", equalTo("Internal server error"));
    }
 }
