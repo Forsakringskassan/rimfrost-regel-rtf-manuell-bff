@@ -1,13 +1,16 @@
-# Environment variables
-.env
-.env.*
-!.env.example
+# Eclipse
+.project
+.classpath
 
-# Dependencies
-/node_modules
+# VSCode
+*/settings.json
+.vscode/settings.json
 
-# TypeScript build output
-/dist
+# IntelliJ
+.idea
 
-# OS generated files
+/old-node
+target/
 .DS_Store
+.env
+node_modules/
