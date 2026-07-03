@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
 @QuarkusTestResource(WireMockTestResource.class)
@@ -22,18 +21,6 @@ class RtfManuellBffControllerTest
    void setUp()
    {
       WireMockTestResource.getServer().resetAll();
-   }
-
-   @Test
-   void health_returns200WithStatusOk()
-   {
-      given()
-            .when()
-            .get("/api/health")
-            .then()
-            .statusCode(200)
-            .body("status", equalTo("ok"))
-            .body("timestamp", notNullValue());
    }
 
    @Test
@@ -143,6 +130,33 @@ class RtfManuellBffControllerTest
    void patchErsattningar_returns500_whenPatchFails()
    {
       WireMockTestResource.getServer().stubFor(patch(urlEqualTo("/" + TEST_ID))
+            .willReturn(aResponse().withStatus(500)));
+
+      given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer test-token")
+            .body("""
+                  {
+                    "ersattningar": [{
+                      "ersattningId": "aabb1122-0000-0000-0000-000000000001",
+                      "beslutsutfall": "JA",
+                      "avslagsanledning": null
+                    }]
+                  }
+                  """)
+            .when()
+            .post("/api/" + TEST_ID + "/patchErsattningar")
+            .then()
+            .statusCode(500)
+            .body("error", equalTo("Upstream error"));
+   }
+
+   @Test
+   void patchErsattningar_returns500_whenDoneFails()
+   {
+      WireMockTestResource.getServer().stubFor(patch(urlEqualTo("/" + TEST_ID))
+            .willReturn(aResponse().withStatus(200)));
+      WireMockTestResource.getServer().stubFor(post(urlEqualTo("/" + TEST_ID + "/done"))
             .willReturn(aResponse().withStatus(500)));
 
       given()

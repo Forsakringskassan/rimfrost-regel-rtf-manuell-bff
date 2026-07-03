@@ -19,9 +19,9 @@ public class RtfManuellMapper
             anstallning
       );
 
-      List<Ersattning> ersattningar = raw.ersattningar().stream()
-            .map(RtfManuellMapper::transformErsattning)
-            .toList();
+      List<Ersattning> ersattningar = raw.ersattningar() == null
+            ? List.of()
+            : raw.ersattningar().stream().map(RtfManuellMapper::transformErsattning).toList();
 
       return new GetDataResponse(raw.handlaggningId(), kund, ersattningar);
    }
