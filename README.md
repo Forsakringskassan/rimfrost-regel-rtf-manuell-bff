@@ -39,6 +39,8 @@ The application can be packaged using:
 ./mvnw package
 ```
 
+Docker image build is disabled by default (`quarkus.container-image.build=false` in `application.properties`), so this command only produces the JAR.
+
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
 Be aware that it's not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
@@ -49,7 +51,7 @@ The application is now runnable using `java -jar target/quarkus-app/quarkus-run.
 Build a Docker image _rimfrost/rimfrost-regel-rtf-manuell-bff:latest_:
 
 ```shell script
-./mvnw clean package
+./mvnw clean package -Dquarkus.container-image.build=true
 ```
 
 Launch container:
@@ -64,9 +66,9 @@ docker run -p 9002:9002 \
 
 | Method | Path | Description |
 |---|---|---|
-| `GET` | `/api/health` | Health check — returns `{status: "ok", timestamp: "..."}`. |
 | `GET` | `/api/task/{handlaggningId}` | Fetches and transforms task data from the backend. Passes the `Authorization` header through. |
 | `POST` | `/api/{handlaggningId}/patchErsattningar` | Patches ersättningar on the backend (PATCH), then marks the task as done (POST to `/done`). |
 | `GET` | `/api/uppgiftsbeskrivning/{uppgiftstyp}` | Fetches task description from the backend (`/utokadUppgiftsbeskrivning`). |
+| `GET` | `/q/health` | Health check provided by `quarkus-smallrye-health`. |
 
 Health: <http://localhost:9002/q/health>
