@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Records used as internal DTOs — EI_EXPOSE_REP is a false positive here.
+         The lists are never mutated by external callers; they exist purely
+         to carry data through the BFF transformation layer. -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+        <Or>
+            <Class name="se.fk.github.rtfmanuellbff.model.BackendPatchRequest"/>
+            <Class name="se.fk.github.rtfmanuellbff.model.GetDataResponse"/>
+            <Class name="se.fk.github.rtfmanuellbff.model.PatchErsattningRequest"/>
+            <Class name="se.fk.github.rtfmanuellbff.model.RawGetDataResponse"/>
+        </Or>
+    </Match>
+</FindBugsFilter>
