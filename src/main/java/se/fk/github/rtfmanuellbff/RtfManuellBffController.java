@@ -9,7 +9,10 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.fk.github.rtfmanuellbff.integration.RtfManuellClient;
-import se.fk.github.rtfmanuellbff.model.*;
+import se.fk.github.rtfmanuellbff.model.BackendPatchRequest;
+import se.fk.github.rtfmanuellbff.model.BackendUpdateErsattning;
+import se.fk.github.rtfmanuellbff.model.PatchErsattningRequest;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 
 @Path("/api")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,8 +31,8 @@ public class RtfManuellBffController
          @HeaderParam("Authorization") String authorization)
    {
       LOGGER.debug("GET /api/task/{}", handlaggningId);
-      RawGetDataResponse raw = backendClient.getTask(handlaggningId, authorization);
-      return Response.ok(RtfManuellMapper.transform(raw)).build();
+      GetDataResponse response = backendClient.getTask(handlaggningId, authorization);
+      return Response.ok(response).build();
    }
 
    @POST
@@ -42,7 +45,11 @@ public class RtfManuellBffController
       LOGGER.debug("POST /api/{}/patchErsattningar", handlaggningId);
       BackendPatchRequest backendBody = new BackendPatchRequest(
             body.ersattningar().stream()
-                  .map(e -> new BackendUpdateErsattning(e.ersattningId(), e.beslutsutfall(), e.avslagsanledning(), true))
+                  .map(e -> new BackendUpdateErsattning(
+                        e.getErsattningId().toString(),
+                        e.getBeslutsutfall().toString(),
+                        e.getAvslagsanledning(),
+                        true))
                   .toList());
       backendClient.patchErsattningar(handlaggningId, backendBody, authorization);
       backendClient.done(handlaggningId, authorization);

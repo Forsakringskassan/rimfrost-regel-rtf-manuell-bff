@@ -5,7 +5,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import se.fk.github.rtfmanuellbff.model.BackendPatchRequest;
-import se.fk.github.rtfmanuellbff.model.RawGetDataResponse;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 
 @RegisterRestClient(configKey = "backend")
 @Produces(MediaType.APPLICATION_JSON)
@@ -14,7 +14,7 @@ public interface RtfManuellClient
 {
    @GET
    @Path("/{handlaggningId}")
-   RawGetDataResponse getTask(
+   GetDataResponse getTask(
          @PathParam("handlaggningId") String handlaggningId,
          @HeaderParam("Authorization") String authorization);
 

@@ -64,12 +64,12 @@ class RtfManuellBffControllerTest
             .get("/api/task/" + TEST_ID)
             .then()
             .statusCode(200)
-            .body("handlaggningId", equalTo(TEST_ID))
+            .body("handlaggning_id", equalTo(TEST_ID))
             .body("kund.fornamn", equalTo("Anna"))
-            .body("kund.anstallning.arbetstidProcent", equalTo(100))
-            .body("kund.anstallning.sistaAnstallningsdag", equalTo("2025-12-31"))
-            .body("ersattningar[0].ersattningId", equalTo("aabb1122-0000-0000-0000-000000000001"))
-            .body("ersattningar[0].omfattningProcent", equalTo(100));
+            .body("kund.anstallning.arbetstid_procent", equalTo(100))
+            .body("kund.anstallning.sista_anstallningsdag", equalTo("2025-12-31"))
+            .body("ersattningar[0].ersattning_id", equalTo("aabb1122-0000-0000-0000-000000000001"))
+            .body("ersattningar[0].omfattning_procent", equalTo(100));
    }
 
    @Test
