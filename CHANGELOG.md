@@ -2,6 +2,18 @@
 
 Changelog of rimfrost-regel-rtf-manuell-bff.
 
+## 0.0.2 (2026-09-23)
+
+### Bug Fixes
+
+-  bump rimfrost-regel-rtf-manuell-openapi-jaxrs-spec 0.2.4 → 1.2.1 ([e386f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/e386f43d1cdce31) Ulf Slunga)  
+
+### Dependency updates
+
+- update forsakringskassan/.github digest to bfb01f7 ([4b179](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/4b1792637282fba) renovate[bot])  
+### Other changes
+
+
 ## 0.0.1 (2026-09-06)
 
 ### Features
