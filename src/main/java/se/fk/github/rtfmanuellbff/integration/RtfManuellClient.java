@@ -14,22 +14,17 @@ public interface RtfManuellClient
 {
    @GET
    @Path("/{handlaggningId}")
-   GetDataResponse getTask(
-         @PathParam("handlaggningId") String handlaggningId,
-         @HeaderParam("Authorization") String authorization);
+   GetDataResponse getTask(@PathParam("handlaggningId") String handlaggningId);
 
    @PATCH
    @Path("/{handlaggningId}")
    void patchErsattningar(
          @PathParam("handlaggningId") String handlaggningId,
-         BackendPatchRequest body,
-         @HeaderParam("Authorization") String authorization);
+         BackendPatchRequest body);
 
    @POST
    @Path("/{handlaggningId}/done")
-   void done(
-         @PathParam("handlaggningId") String handlaggningId,
-         @HeaderParam("Authorization") String authorization);
+   void done(@PathParam("handlaggningId") String handlaggningId);
 
    @GET
    @Path("/utokadUppgiftsbeskrivning")

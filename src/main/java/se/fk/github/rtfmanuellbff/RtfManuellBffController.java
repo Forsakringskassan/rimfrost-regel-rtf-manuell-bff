@@ -12,7 +12,10 @@ import se.fk.github.rtfmanuellbff.integration.RtfManuellClient;
 import se.fk.github.rtfmanuellbff.model.BackendPatchRequest;
 import se.fk.github.rtfmanuellbff.model.BackendUpdateErsattning;
 import se.fk.github.rtfmanuellbff.model.PatchErsattningRequest;
+import se.fk.rimfrost.framework.bff.logging.LogContext;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
+
+import java.util.function.Supplier;
 
 @Path("/api")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,34 +29,35 @@ public class RtfManuellBffController
 
    @GET
    @Path("/task/{handlaggningId}")
-   public Response getTask(
-         @PathParam("handlaggningId") String handlaggningId,
-         @HeaderParam("Authorization") String authorization)
+   public Response getTask(@PathParam("handlaggningId") String handlaggningId)
    {
       LOGGER.debug("GET /api/task/{}", handlaggningId);
-      GetDataResponse response = backendClient.getTask(handlaggningId, authorization);
-      return Response.ok(response).build();
+      return withLogContext(handlaggningId, () -> {
+         GetDataResponse response = backendClient.getTask(handlaggningId);
+         return Response.ok(response).build();
+      });
    }
 
    @POST
    @Path("/{handlaggningId}/patchErsattningar")
    public Response patchErsattningar(
          @PathParam("handlaggningId") String handlaggningId,
-         @Valid PatchErsattningRequest body,
-         @HeaderParam("Authorization") String authorization)
+         @Valid PatchErsattningRequest body)
    {
       LOGGER.debug("POST /api/{}/patchErsattningar", handlaggningId);
-      BackendPatchRequest backendBody = new BackendPatchRequest(
-            body.ersattningar().stream()
-                  .map(e -> new BackendUpdateErsattning(
-                        e.getErsattningId().toString(),
-                        e.getBeslutsutfall().toString(),
-                        e.getAvslagsanledning(),
-                        true))
-                  .toList());
-      backendClient.patchErsattningar(handlaggningId, backendBody, authorization);
-      backendClient.done(handlaggningId, authorization);
-      return Response.noContent().build();
+      return withLogContext(handlaggningId, () -> {
+         BackendPatchRequest backendBody = new BackendPatchRequest(
+               body.ersattningar().stream()
+                     .map(e -> new BackendUpdateErsattning(
+                           e.getErsattningId().toString(),
+                           e.getBeslutsutfall().toString(),
+                           e.getAvslagsanledning(),
+                           true))
+                     .toList());
+         backendClient.patchErsattningar(handlaggningId, backendBody);
+         backendClient.done(handlaggningId);
+         return Response.noContent().build();
+      });
    }
 
    // uppgiftstyp is accepted in the path for FE compatibility but the backend exposes a single endpoint
@@ -64,5 +68,15 @@ public class RtfManuellBffController
       LOGGER.debug("GET /api/uppgiftsbeskrivning");
       JsonNode data = backendClient.getUppgiftsbeskrivning();
       return Response.ok(data).build();
+   }
+
+   // Exceptions are left to propagate to the framework's GlobalExceptionMapper; this only
+   // scopes the handlaggningId MDC key for the duration of the call.
+   private Response withLogContext(String handlaggningId, Supplier<Response> action)
+   {
+      try (LogContext ignored = LogContext.put("handlaggningId", handlaggningId))
+      {
+         return action.get();
+      }
    }
 }
