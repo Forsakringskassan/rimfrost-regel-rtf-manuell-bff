@@ -2,6 +2,28 @@
 
 Changelog of rimfrost-regel-rtf-manuell-bff.
 
+## 0.1.0 (2026-11-04)
+
+### Features
+
+-  apply rimfrost-framework-bff ([5d6ef](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/5d6ef3dbe1fba0d) LisaWedin_Ductus)  
+
+### Bug Fixes
+
+-  replace secrets with permissions in CI/release workflows ([744d5](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/744d5569046c01d) Ulf Slunga)  
+-  **deps**  update dependency se.fk.rimfrost.regel.rtf.manuell:rimfrost-regel-rtf-manuell-openapi-jaxrs-spec to v1.2.2 ([03a82](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/03a8262a658b848) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.framework.bff:rimfrost-framework-bff to v0.0.2 ([859e3](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/859e3b6b50bceba) renovate[bot])  
+
+### Dependency updates
+
+- update forsakringskassan/.github digest to 625efb1 ([ad9dd](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/ad9dddf6eb841ef) renovate[bot])  
+- update forsakringskassan/.github digest to 733eb32 ([e9648](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/e96482812010be4) renovate[bot])  
+- update forsakringskassan/.github digest to cbd74f1 ([2127d](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/2127da29d7eb3dc) renovate[bot])  
+### Other changes
+
+
+## rimfrost-1_2 (2026-09-23)
+
 ## 0.0.2 (2026-09-23)
 
 ### Bug Fixes
