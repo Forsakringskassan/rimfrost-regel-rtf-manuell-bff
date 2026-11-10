@@ -6,6 +6,7 @@
     <Match>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
         <Or>
+            <Class name="se.fk.github.rtfmanuellbff.model.BackendGetResponse"/>
             <Class name="se.fk.github.rtfmanuellbff.model.BackendPatchRequest"/>
             <Class name="se.fk.github.rtfmanuellbff.model.GetDataResponse"/>
             <Class name="se.fk.github.rtfmanuellbff.model.PatchErsattningRequest"/>
