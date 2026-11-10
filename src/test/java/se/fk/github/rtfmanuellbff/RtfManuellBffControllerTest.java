@@ -3,21 +3,36 @@ package se.fk.github.rtfmanuellbff;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import io.smallrye.reactive.messaging.memory.InMemoryConnector;
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.reactive.messaging.spi.Connector;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import se.fk.rimfrost.informationsaccess.InformationsaccessEvent;
+
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @QuarkusTestResource(WireMockTestResource.class)
 class RtfManuellBffControllerTest
 {
 
-   private static final String TEST_ID = "550e8400-e29b-41d4-a716-446655440000";
+   static final String TEST_ID = "550e8400-e29b-41d4-a716-446655440000";
+   static final String UPPGIFT_ID = "8a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d";
+   static final String REGEL_ID = "a11f3429-3a6b-4389-ba1c-c2747b0fb45b";
+   static final String ANVANDARE_TYP_ID = "9b1e4f2a-6c3d-4e8b-a7f5-2d0c1b9e8a36";
 
-   private static final String TASK_BODY = """
+   private static final String TASK_DATA = """
          {
            "handlaggning_id": "%s",
            "kund": {
@@ -46,10 +61,31 @@ class RtfManuellBffControllerTest
          }
          """.formatted(TEST_ID);
 
+   // The regeltjänst wraps its data together with informationsaccess data (FRMM-FR-09.1)
+   static final String TASK_BODY = """
+         {
+           "data": %s,
+           "informationsaccess": {
+             "uppgiftId": "%s",
+             "regelId": "%s",
+             "regelVersion": "1",
+             "anvandare": {
+               "typId": "%s",
+               "varde": "H123456"
+             }
+           }
+         }
+         """.formatted(TASK_DATA, UPPGIFT_ID, REGEL_ID, ANVANDARE_TYP_ID);
+
+   @Inject
+   @Connector("smallrye-in-memory")
+   InMemoryConnector inMemoryConnector;
+
    @BeforeEach
    void setUp()
    {
       WireMockTestResource.getServer().resetAll();
+      inMemoryConnector.sink("ilogg-event").clear();
    }
 
    @Test
@@ -309,6 +345,90 @@ class RtfManuellBffControllerTest
             .statusCode(200)
             .body("status", equalTo("UP"))
             .body("checks.find { it.name == 'backend' }.status", equalTo("UP"));
+   }
+
+   @Test
+   @DisplayName("RTFB-FR-04.1, RTFB-FR-04.2: Hämtning av ärendeunderlag ger ett informationsaccess-event med förväntat innehåll")
+   @SuppressWarnings("unchecked")
+   void getTask_publishesInformationsaccessEvent()
+   {
+      stubTask();
+
+      given()
+            .header("Authorization", "Bearer test-token")
+            .when()
+            .get("/api/task/" + TEST_ID)
+            .then()
+            .statusCode(200);
+
+      var received = inMemoryConnector.sink("ilogg-event").received();
+      assertEquals(1, received.size());
+      var event = (InformationsaccessEvent) received.getFirst().getPayload();
+      assertNotNull(event.getId());
+      assertEquals(ANVANDARE_TYP_ID, event.getAnvandare().getTypId());
+      assertEquals("H123456", event.getAnvandare().getVarde());
+      assertNotNull(event.getTidpunkt());
+      assertEquals("rimfrost-regel-rtf-manuell-bff", event.getKalla());
+      assertEquals(TEST_ID, event.getHandlaggningId());
+      assertEquals(UPPGIFT_ID, event.getUppgiftId());
+      assertEquals(REGEL_ID, event.getRegelId());
+      assertEquals("1", event.getRegelVersion());
+      var kund = (Map<String, Object>) event.getVisadInformation().get("kund");
+      assertEquals("Anna", kund.get("fornamn"));
+      assertTrue(event.getVisadInformation().containsKey("ersattningar"));
+   }
+
+   @Test
+   @DisplayName("RTFB-FR-04.2: Två hämtningar ger två event med olika id")
+   void getTask_publishesEventWithUniqueIdPerCall()
+   {
+      stubTask();
+
+      given().when().get("/api/task/" + TEST_ID).then().statusCode(200);
+      given().when().get("/api/task/" + TEST_ID).then().statusCode(200);
+
+      var received = inMemoryConnector.sink("ilogg-event").received();
+      assertEquals(2, received.size());
+      assertNotEquals(((InformationsaccessEvent) received.get(0).getPayload()).getId(),
+            ((InformationsaccessEvent) received.get(1).getPayload()).getId());
+   }
+
+   @Test
+   @DisplayName("RTFB-FR-04.3: Informationsaccessdata skickas inte vidare till frontend")
+   void getTask_doesNotReturnInformationsaccessToFrontend()
+   {
+      stubTask();
+
+      given()
+            .when()
+            .get("/api/task/" + TEST_ID)
+            .then()
+            .statusCode(200)
+            .body("informationsaccess", nullValue())
+            .body("data", nullValue())
+            .body("handlaggning_id", equalTo(TEST_ID));
+   }
+
+   @Test
+   @DisplayName("RTFB-FR-04.4: Hämtning av hjälptext ger inget informationsaccess-event")
+   void getUppgiftsbeskrivning_publishesNoEvent()
+   {
+      WireMockTestResource.getServer().stubFor(get(urlEqualTo("/utokadUppgiftsbeskrivning"))
+            .willReturn(aResponse()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody("[{\"beskrivning\": \"Kontrollera rätt till försäkring\"}]")));
+
+      given().when().get("/api/uppgiftsbeskrivning/RTF_MANUELL").then().statusCode(200);
+
+      assertTrue(inMemoryConnector.sink("ilogg-event").received().isEmpty());
+   }
+
+   private static void stubTask()
+   {
+      WireMockTestResource.getServer().stubFor(get(urlEqualTo("/" + TEST_ID))
+            .willReturn(aResponse()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(TASK_BODY)));
    }
 
    @Test

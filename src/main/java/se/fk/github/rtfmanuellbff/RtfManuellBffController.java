@@ -1,6 +1,7 @@
 package se.fk.github.rtfmanuellbff;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -8,12 +9,13 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.fk.github.rtfmanuellbff.integration.InformationsaccessPublisher;
 import se.fk.github.rtfmanuellbff.integration.RtfManuellClient;
+import se.fk.github.rtfmanuellbff.model.BackendGetResponse;
 import se.fk.github.rtfmanuellbff.model.BackendPatchRequest;
 import se.fk.github.rtfmanuellbff.model.BackendUpdateErsattning;
 import se.fk.github.rtfmanuellbff.model.PatchErsattningRequest;
 import se.fk.rimfrost.framework.bff.logging.LogContext;
-import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 
 import java.util.function.Supplier;
 
@@ -27,14 +29,18 @@ public class RtfManuellBffController
    @RestClient
    RtfManuellClient backendClient;
 
+   @Inject
+   InformationsaccessPublisher informationsaccessPublisher;
+
    @GET
    @Path("/task/{handlaggningId}")
    public Response getTask(@PathParam("handlaggningId") String handlaggningId)
    {
       LOGGER.debug("GET /api/task/{}", handlaggningId);
       return withLogContext(handlaggningId, () -> {
-         GetDataResponse response = backendClient.getTask(handlaggningId);
-         return Response.ok(response).build();
+         BackendGetResponse response = backendClient.getTask(handlaggningId);
+         informationsaccessPublisher.publish(handlaggningId, response);
+         return Response.ok(response.data()).build();
       });
    }
 

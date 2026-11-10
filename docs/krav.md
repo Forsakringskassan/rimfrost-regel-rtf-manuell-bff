@@ -16,6 +16,7 @@ kontrakt eller det generiska ramverk den bygger på.
 |---|---|
 | RTF Manuell Frontend | Anropar BFF:n för att hämta ärendeunderlag och lämna in beslut |
 | RTF Manuell-regeltjänsten | Bakomliggande tjänst som äger ärende- och ersättningsdata |
+| ILogg (via Kafka-topic `informationsaccess`) | Tar emot informationsaccess-event om vilken data som visats |
 
 ---
 
@@ -49,6 +50,19 @@ kontrakt eller det generiska ramverk den bygger på.
   nätverksanslutningar, ska BFF:n returnera en statuskod som tydligt anger att bakomliggande
   tjänst är otillgänglig.
 
+### RTFB-FR-04 — Informationsaccess vid hämtning av ärendeunderlag
+
+- **RTFB-FR-04.1** Vid hämtning av ärendeunderlag (RTFB-FR-01.1) ska BFF:n publicera ett
+  informationsaccess-event via ILogg (FBFF-FR-05). Eventets `visadInformation` ska vara den
+  data som skickas till frontend.
+- **RTFB-FR-04.2** Eventet ska ange användare, uppgift, regel och regelversion från
+  regeltjänstens informationsaccessdata (FRMM-FR-09), handläggningsid, tidpunkt, källan
+  `rimfrost-regel-rtf-manuell-bff` och ett eget id.
+- **RTFB-FR-04.3** Informationsaccessdata ska inte skickas vidare till frontend.
+- **RTFB-FR-04.4** Hämtning av hjälptext (RTFB-FR-01.2) ska inte ge något event.
+- **RTFB-FR-04.5** Om eventet inte kan publiceras ska BFF:n returnera ett fel till frontend utan
+  att skicka ärendeunderlaget, så att ingen information visas utan att det loggas.
+
 ---
 
 ## Icke-funktionella krav
@@ -75,5 +89,6 @@ kontrakt eller det generiska ramverk den bygger på.
 
 ## Integration med RTF Manuell-regeltjänsten
 
-BFF:n är en ren synkron REST-till-REST-integration mot regeltjänsten, som i sin tur bygger på
-det generiska manuella regelramverket. BFF:n lagrar inget tillstånd själv.
+BFF:n är en synkron REST-till-REST-integration mot regeltjänsten, som i sin tur bygger på
+det generiska manuella regelramverket. Vid hämtning av ärendeunderlag publicerar BFF:n även ett
+informationsaccess-event på Kafka (RTFB-FR-04). BFF:n lagrar inget tillstånd själv.

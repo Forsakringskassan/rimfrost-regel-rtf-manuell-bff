@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import se.fk.github.rtfmanuellbff.model.BackendGetResponse;
 import se.fk.github.rtfmanuellbff.model.BackendPatchRequest;
-import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 
 @RegisterRestClient(configKey = "backend")
 @Produces(MediaType.APPLICATION_JSON)
@@ -14,7 +14,7 @@ public interface RtfManuellClient
 {
    @GET
    @Path("/{handlaggningId}")
-   GetDataResponse getTask(@PathParam("handlaggningId") String handlaggningId);
+   BackendGetResponse getTask(@PathParam("handlaggningId") String handlaggningId);
 
    @PATCH
    @Path("/{handlaggningId}")
