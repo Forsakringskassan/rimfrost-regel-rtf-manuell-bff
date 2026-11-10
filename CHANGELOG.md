@@ -2,6 +2,20 @@
 
 Changelog of rimfrost-regel-rtf-manuell-bff.
 
+## 0.2.0 (2026-11-10)
+
+### Features
+
+-  publicera informationsaccess-event vid hämtning av ärendeunderlag (FKPOC-1102) ([a9fef](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/a9fef2e0cd073d5) julolsso)  
+
+### Bug Fixes
+
+-  **deps**  update dependency se.fk.rimfrost.framework.bff:rimfrost-framework-bff to v0.0.4 ([ff0e3](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/ff0e371c77bc644) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.framework.bff:rimfrost-framework-bff to v0.0.3 ([7f3c1](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/7f3c1631a10d1fa) renovate[bot])  
+
+### Dependency updates
+
+- update forsakringskassan/.github digest to cbc0db8 ([ea0c1](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/ea0c196a181f348) renovate[bot])  
 ## 0.1.0 (2026-11-04)
 
 ### Features
