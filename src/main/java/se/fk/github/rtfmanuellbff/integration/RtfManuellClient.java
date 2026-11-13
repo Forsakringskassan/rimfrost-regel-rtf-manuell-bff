@@ -1,11 +1,11 @@
 package se.fk.github.rtfmanuellbff.integration;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import se.fk.github.rtfmanuellbff.model.BackendGetResponse;
 import se.fk.github.rtfmanuellbff.model.BackendPatchRequest;
+import se.fk.github.rtfmanuellbff.model.BackendUppgiftsbeskrivning;
 
 @RegisterRestClient(configKey = "backend")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,5 +28,5 @@ public interface RtfManuellClient
 
    @GET
    @Path("/utokadUppgiftsbeskrivning")
-   JsonNode getUppgiftsbeskrivning();
+   BackendUppgiftsbeskrivning getUppgiftsbeskrivning();
 }

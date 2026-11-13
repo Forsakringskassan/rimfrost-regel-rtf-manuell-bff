@@ -104,10 +104,45 @@ class RtfManuellBffControllerTest
             .statusCode(200)
             .body("handlaggning_id", equalTo(TEST_ID))
             .body("kund.fornamn", equalTo("Anna"))
+            .body("kund.kon", equalTo("KVINNA"))
+            .body("kund.anstallning.anstallningsdag", equalTo("2020-01-01"))
             .body("kund.anstallning.arbetstid_procent", equalTo(100))
             .body("kund.anstallning.sista_anstallningsdag", equalTo("2025-12-31"))
             .body("ersattningar[0].ersattning_id", equalTo("aabb1122-0000-0000-0000-000000000001"))
-            .body("ersattningar[0].omfattning_procent", equalTo(100));
+            .body("ersattningar[0].omfattning_procent", equalTo(100))
+            .body("ersattningar[0].beslutsutfall", equalTo("JA"))
+            .body("ersattningar[0].from", equalTo("2024-01-01"))
+            .body("ersattningar[0].tom", equalTo("2024-01-14"));
+   }
+
+   @Test
+   void getTask_returnsEmptyErsattningar_whenBackendSendsNull()
+   {
+      WireMockTestResource.getServer().stubFor(get(urlEqualTo("/" + TEST_ID))
+            .willReturn(aResponse()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody("""
+                        {
+                          "data": {
+                            "handlaggning_id": "%s",
+                            "kund": { "fornamn": "Anna" },
+                            "ersattningar": null
+                          },
+                          "informationsaccess": {
+                            "uppgiftId": "%s",
+                            "regelId": "%s",
+                            "regelVersion": "1",
+                            "anvandare": { "typId": "%s", "varde": "H123456" }
+                          }
+                        }
+                        """.formatted(TEST_ID, UPPGIFT_ID, REGEL_ID, ANVANDARE_TYP_ID))));
+
+      given()
+            .when()
+            .get("/api/task/" + TEST_ID)
+            .then()
+            .statusCode(200)
+            .body("ersattningar.size()", equalTo(0));
    }
 
    @Test
@@ -222,14 +257,14 @@ class RtfManuellBffControllerTest
       WireMockTestResource.getServer().stubFor(get(urlEqualTo("/utokadUppgiftsbeskrivning"))
             .willReturn(aResponse()
                   .withHeader("Content-Type", "application/json")
-                  .withBody("[{\"beskrivning\": \"Kontrollera rätt till försäkring\"}]")));
+                  .withBody("{\"beskrivning\": \"Kontrollera rätt till försäkring\"}")));
 
       given()
             .when()
             .get("/api/uppgiftsbeskrivning/RTF_MANUELL")
             .then()
             .statusCode(200)
-            .body("[0].beskrivning", equalTo("Kontrollera rätt till försäkring"));
+            .body("beskrivning", equalTo("Kontrollera rätt till försäkring"));
    }
 
    @Test
@@ -416,7 +451,7 @@ class RtfManuellBffControllerTest
       WireMockTestResource.getServer().stubFor(get(urlEqualTo("/utokadUppgiftsbeskrivning"))
             .willReturn(aResponse()
                   .withHeader("Content-Type", "application/json")
-                  .withBody("[{\"beskrivning\": \"Kontrollera rätt till försäkring\"}]")));
+                  .withBody("{\"beskrivning\": \"Kontrollera rätt till försäkring\"}")));
 
       given().when().get("/api/uppgiftsbeskrivning/RTF_MANUELL").then().statusCode(200);
 
