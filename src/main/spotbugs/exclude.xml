@@ -9,8 +9,11 @@
             <Class name="se.fk.github.rtfmanuellbff.model.BackendGetResponse"/>
             <Class name="se.fk.github.rtfmanuellbff.model.BackendPatchRequest"/>
             <Class name="se.fk.github.rtfmanuellbff.model.GetDataResponse"/>
-            <Class name="se.fk.github.rtfmanuellbff.model.PatchErsattningRequest"/>
             <Class name="se.fk.github.rtfmanuellbff.model.RawGetDataResponse"/>
         </Or>
+    </Match>
+    <!-- Generated from src/main/openapi/openapi.yaml -->
+    <Match>
+        <Package name="~se\.fk\.github\.rtfmanuellbff\.generated\..*"/>
     </Match>
 </FindBugsFilter>

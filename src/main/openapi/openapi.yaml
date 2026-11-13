@@ -1,0 +1,214 @@
+openapi: 3.1.0
+info:
+  title: RTF Manuell BFF API
+  version: 1.0.0
+  description: API mellan rtf-manuell-fe och rtf-manuell-bff för manuell kontroll av rätt till försäkring
+
+paths:
+  /api/task/{handlaggningId}:
+    get:
+      tags: [RtfManuellBffController]
+      operationId: getTask
+      summary: Hämta information som behövs för att utföra kontrollen
+      parameters:
+        - $ref: "#/components/parameters/HandlaggningId"
+      responses:
+        "200":
+          description: Information hämtad OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTaskResponse"
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+
+  /api/{handlaggningId}/patchErsattningar:
+    post:
+      tags: [RtfManuellBffController]
+      operationId: patchErsattningar
+      summary: Spara beslutsutfall för ersättningar och slutför uppgiften
+      parameters:
+        - $ref: "#/components/parameters/HandlaggningId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchErsattningarRequest"
+      responses:
+        "204":
+          description: Ersättningar sparade och uppgiften slutförd
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+
+  /api/uppgiftsbeskrivning/{uppgiftstyp}:
+    get:
+      tags: [RtfManuellBffController]
+      operationId: getUppgiftsbeskrivning
+      summary: Hämta utökad beskrivning av uppgiften
+      parameters:
+        - name: uppgiftstyp
+          in: path
+          required: true
+          description: Används inte av BFF:en, finns kvar för bakåtkompatibilitet med FE
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Beskrivning hämtad OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetUppgiftsbeskrivningResponse"
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+
+components:
+  parameters:
+    HandlaggningId:
+      name: handlaggningId
+      in: path
+      required: true
+      description: ID för handläggningsärendet
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    Error:
+      description: Fel från BFF:en eller från regeltjänsten bakom den
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    GetTaskResponse:
+      type: object
+      properties:
+        handlaggning_id:
+          type: string
+          format: uuid
+        kund:
+          $ref: "#/components/schemas/Kund"
+        ersattningar:
+          type: array
+          items:
+            $ref: "#/components/schemas/Ersattning"
+      required:
+        - handlaggning_id
+        - kund
+        - ersattningar
+
+    Kund:
+      type: object
+      properties:
+        fornamn:
+          type: string
+        efternamn:
+          type: string
+        kon:
+          $ref: "#/components/schemas/Kon"
+        anstallning:
+          $ref: "#/components/schemas/Anstallning"
+
+    Kon:
+      type: string
+      enum: [MAN, KVINNA]
+
+    Anstallning:
+      type: object
+      properties:
+        organisationsnummer:
+          type: string
+        organisationsnamn:
+          type: string
+        arbetstid_procent:
+          type: integer
+        anstallningsdag:
+          type: string
+          format: date
+        sista_anstallningsdag:
+          type: [string, "null"]
+          format: date
+
+    Ersattning:
+      type: object
+      properties:
+        ersattning_id:
+          type: string
+          format: uuid
+        ersattningstyp:
+          type: string
+        omfattning_procent:
+          type: integer
+        belopp:
+          type: integer
+        berakningsgrund:
+          type: integer
+        beslutsutfall:
+          $ref: "#/components/schemas/Beslutsutfall"
+        avslagsanledning:
+          type: [string, "null"]
+        from:
+          type: string
+          format: date
+        tom:
+          type: string
+          format: date
+      required:
+        - ersattning_id
+        - ersattningstyp
+        - omfattning_procent
+        - belopp
+        - from
+        - tom
+
+    PatchErsattningarRequest:
+      type: object
+      properties:
+        ersattningar:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UpdateErsattning"
+      required:
+        - ersattningar
+
+    UpdateErsattning:
+      type: object
+      properties:
+        ersattningId:
+          type: string
+          format: uuid
+        beslutsutfall:
+          $ref: "#/components/schemas/Beslutsutfall"
+        avslagsanledning:
+          type: [string, "null"]
+      required:
+        - ersattningId
+        - beslutsutfall
+
+    Beslutsutfall:
+      type: string
+      enum: [JA, NEJ, FU]
+
+    GetUppgiftsbeskrivningResponse:
+      type: object
+      properties:
+        beskrivning:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

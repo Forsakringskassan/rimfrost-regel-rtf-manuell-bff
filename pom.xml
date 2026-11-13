@@ -108,6 +108,42 @@
           <excludeFilterFile>src/main/spotbugs/exclude.xml</excludeFilterFile>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>7.27.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/openapi/openapi.yaml</inputSpec>
+              <generatorName>jaxrs-spec</generatorName>
+              <apiPackage>se.fk.github.rtfmanuellbff.generated.api</apiPackage>
+              <modelPackage>se.fk.github.rtfmanuellbff.generated.model</modelPackage>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <configOptions>
+                <interfaceOnly>true</interfaceOnly>
+                <sourceFolder>src/gen/java</sourceFolder>
+                <!-- Leave unset fields out of responses instead of sending null, as the spec describes them -->
+                <additionalModelTypeAnnotations>@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)</additionalModelTypeAnnotations>
+                <useTags>true</useTags>
+                <useJakartaEe>true</useJakartaEe>
+                <useBeanValidation>true</useBeanValidation>
+                <useSwaggerAnnotations>false</useSwaggerAnnotations>
+                <openApiNullable>false</openApiNullable>
+                <dateLibrary>java8</dateLibrary>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
