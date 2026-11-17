@@ -1,11 +1,11 @@
 package se.fk.github.rtfmanuellbff;
 
-import se.fk.github.rtfmanuellbff.generated.model.Anstallning;
-import se.fk.github.rtfmanuellbff.generated.model.Beslutsutfall;
-import se.fk.github.rtfmanuellbff.generated.model.Ersattning;
-import se.fk.github.rtfmanuellbff.generated.model.GetTaskResponse;
-import se.fk.github.rtfmanuellbff.generated.model.Kon;
-import se.fk.github.rtfmanuellbff.generated.model.Kund;
+import se.fk.rimfrost.regel.rtf.manuell.bff.jaxrsspec.controllers.generatedsource.model.Anstallning;
+import se.fk.rimfrost.regel.rtf.manuell.bff.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
+import se.fk.rimfrost.regel.rtf.manuell.bff.jaxrsspec.controllers.generatedsource.model.Ersattning;
+import se.fk.rimfrost.regel.rtf.manuell.bff.jaxrsspec.controllers.generatedsource.model.GetTaskResponse;
+import se.fk.rimfrost.regel.rtf.manuell.bff.jaxrsspec.controllers.generatedsource.model.Kon;
+import se.fk.rimfrost.regel.rtf.manuell.bff.jaxrsspec.controllers.generatedsource.model.Kund;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 
 import java.util.List;

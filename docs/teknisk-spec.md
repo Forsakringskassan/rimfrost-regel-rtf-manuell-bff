@@ -10,16 +10,20 @@ OpenAPI-specifikation.
 
 ```text
 src/main/java/se/fk/github/rtfmanuellbff
-├── RtfManuellBffController   # REST-ändpunkter mot frontend
+├── RtfManuellBffController   # Implementerar det genererade API-interfacet mot frontend
+├── GetTaskResponseMapper     # Regeltjänstens modell → BFF:ens API-modell
 ├── integration/RtfManuellClient  # REST-klient mot regeltjänsten
 ├── GlobalExceptionMapper      # Enhetlig felmappning, inkl. hantering av avbrutna anslutningar
-└── model/                    # PatchErsattningRequest m.fl. (övriga typer kommer från OpenAPI-specen)
+└── model/                    # Backend*-typer för regeltjänstens svar
 ```
+
+API-interface och modeller mot frontend kommer från `rimfrost-regel-rtf-manuell-bff-openapi-jaxrs-spec`.
 
 ## API-specifikationer
 
 | API | Specifikationsartefakt | Basväg |
 |---|---|---|
+| RTF Manuell BFF (mot frontend) | `rimfrost-regel-rtf-manuell-bff-openapi` | `/api` |
 | RTF Manuell-regeltjänsten | `rimfrost-regel-rtf-manuell-openapi` | Konfigurerad via `BACKEND_URL` |
 
 | Metod | Sökväg | Beskrivning |

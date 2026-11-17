@@ -12,8 +12,4 @@
             <Class name="se.fk.github.rtfmanuellbff.model.RawGetDataResponse"/>
         </Or>
     </Match>
-    <!-- Generated from src/main/openapi/openapi.yaml -->
-    <Match>
-        <Package name="~se\.fk\.github\.rtfmanuellbff\.generated\..*"/>
-    </Match>
 </FindBugsFilter>

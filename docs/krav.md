@@ -82,7 +82,7 @@ kontrakt eller det generiska ramverk den bygger på.
 
 | API | Målgrupp | Specifikationsartefakt |
 |---|---|---|
-| RTF Manuell BFF REST-API | RTF Manuell Frontend | Ingen dedikerad BFF-specifikation |
+| RTF Manuell BFF REST-API | RTF Manuell Frontend | `rimfrost-regel-rtf-manuell-bff-openapi` |
 | RTF Manuell-regeltjänstens API | Denna BFF | `rimfrost-regel-rtf-manuell-openapi` |
 
 ---
