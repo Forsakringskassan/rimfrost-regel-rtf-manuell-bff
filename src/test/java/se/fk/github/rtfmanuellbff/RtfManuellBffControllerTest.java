@@ -104,12 +104,18 @@ class RtfManuellBffControllerTest
             .statusCode(200)
             .body("handlaggning_id", equalTo(TEST_ID))
             .body("kund.fornamn", equalTo("Anna"))
+            .body("kund.efternamn", equalTo("Svensson"))
             .body("kund.kon", equalTo("KVINNA"))
             .body("kund.anstallning.anstallningsdag", equalTo("2020-01-01"))
             .body("kund.anstallning.arbetstid_procent", equalTo(100))
             .body("kund.anstallning.sista_anstallningsdag", equalTo("2025-12-31"))
+            .body("kund.anstallning.organisationsnummer", equalTo("556000-0000"))
+            .body("kund.anstallning.organisationsnamn", equalTo("Testbolaget AB"))
             .body("ersattningar[0].ersattning_id", equalTo("aabb1122-0000-0000-0000-000000000001"))
+            .body("ersattningar[0].ersattningstyp", equalTo("SGI"))
             .body("ersattningar[0].omfattning_procent", equalTo(100))
+            .body("ersattningar[0].belopp", equalTo(1000))
+            .body("ersattningar[0].berakningsgrund", equalTo(500))
             .body("ersattningar[0].beslutsutfall", equalTo("JA"))
             .body("ersattningar[0].from", equalTo("2024-01-01"))
             .body("ersattningar[0].tom", equalTo("2024-01-14"));
@@ -158,6 +164,19 @@ class RtfManuellBffControllerTest
             .then()
             .statusCode(500)
             .body("error", equalTo("Upstream error"));
+   }
+
+   @Test
+   @DisplayName("RTFB-FR-01.1: Ogiltigt UUID som handlaggningId ger 404")
+   void getTask_returns404_whenHandlaggningIdIsNotAUuid()
+   {
+      given()
+            .when()
+            .get("/api/task/not-a-uuid")
+            .then()
+            .statusCode(404);
+
+      WireMockTestResource.getServer().verify(0, getRequestedFor(urlMatching(".*")));
    }
 
    @Test
