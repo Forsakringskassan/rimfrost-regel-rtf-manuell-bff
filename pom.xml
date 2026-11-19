@@ -76,6 +76,12 @@
       <version>1.2.2</version>
     </dependency>
 
+    <dependency>
+      <groupId>se.fk.rimfrost.regel.rtf.manuell.bff</groupId>
+      <artifactId>rimfrost-regel-rtf-manuell-bff-openapi-jaxrs-spec</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+
   </dependencies>
 
   <repositories>

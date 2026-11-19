@@ -9,7 +9,6 @@
             <Class name="se.fk.github.rtfmanuellbff.model.BackendGetResponse"/>
             <Class name="se.fk.github.rtfmanuellbff.model.BackendPatchRequest"/>
             <Class name="se.fk.github.rtfmanuellbff.model.GetDataResponse"/>
-            <Class name="se.fk.github.rtfmanuellbff.model.PatchErsattningRequest"/>
             <Class name="se.fk.github.rtfmanuellbff.model.RawGetDataResponse"/>
         </Or>
     </Match>
