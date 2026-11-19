@@ -2,6 +2,15 @@
 
 Changelog of rimfrost-regel-rtf-manuell-bff.
 
+## 0.3.0 (2026-11-19)
+
+### Features
+
+-  generera BFF-API från openapi-spec och implementera det i controllern (FKPOC-1321) ([e648a](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell-bff/commit/e648aee881d9786) julolsso)  
+
+### Other changes
+
+
 ## 0.2.0 (2026-11-10)
 
 ### Features
